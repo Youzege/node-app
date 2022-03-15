@@ -67,3 +67,16 @@ const serverHandle = require('../app')
 const server = http.createServer(serverHandle)
 ```
 
+
+
+#### 接口设计信息
+
+| 描述             | 接口地址         | 请求方法 | url参数                       | 备注                     |
+| ---------------- | ---------------- | -------- | ----------------------------- | ------------------------ |
+| 获取博客列表     | /api/blog/list   | GET      | author作者，keyword搜索关键字 | 参数为空，不进行查询过滤 |
+| 获取一篇博客内容 | /api/blog/detail | GET      | id                            |                          |
+| 新增一篇博客     | /api/blog/new    | POST     |                               | post中有新增的信息       |
+| 更新一篇博客     | /api/blog/update | POST     | id                            | postData中有更新的内容   |
+| 删除一篇博客     | /api/blog/del    | POST     | id                            |                          |
+| 登录             | /api/user/login  | POST     |                               | postData中有用户名和密码 |
+
