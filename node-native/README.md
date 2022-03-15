@@ -388,4 +388,58 @@ const serverHandle = (req, res) => {
 
 
 
+结语：给各个模块拆分，单独处理，解耦，易于管理代码模块
+
+
+
 #### 路由开发 - 博客详情路由
+
+
+
+##### 处理服务端返回的数据
+
+src/controller/blog.js
+
+```js
+/**
+ * 
+ * @param {*} id 
+ * @returns 根据 id 返回博客详情信息
+ */
+const getDetail = (id) => {
+
+    return {
+        id: 1,
+        title: '标题A',
+        content: '内容A',
+        createTime: 1647340327044,
+        author: 'youzege'
+    }
+}
+
+export {
+    ...
+    getDetail
+}
+```
+
+
+
+##### 处理接口
+
+src/router/blog.js
+
+```js
+const handleBlogRouter = (req, res) => {
+    ...
+    // 获取博客详情
+    if (method === 'GET' && req.path === '/api/blog/detail') {
+        const id = req.query.id
+        const data = getDetail(id)
+
+        return new SuccessModel(data)
+    }
+    ...
+}
+```
+
