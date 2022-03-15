@@ -443,3 +443,95 @@ const handleBlogRouter = (req, res) => {
 }
 ```
 
+
+
+#### post请求参数处理
+
+##### getPostData方法
+
+通过promise异步操作，进行post data的处理
+
+判断是否是 post 请求，否，直接返回空对象
+
+判断请求头，是否为 application/json，否，返回空对象
+
+处理post请求，获取请求参数chunk流，拼接请求参数，数据获取完成，返回resolve成功状态，JSON解析 postData
+
+```js
+/**
+ * 处理Post请求的数据
+ * @param {*} req 
+ * @returns promise
+ */
+const getPostData = (req) => {
+    const promise = new Promise((resolve, reject) => {
+        if (req.method !== 'POST') {
+            resolve({})
+            return
+        }
+
+        if (req.headers['content-type'] !== 'application/json') {
+            resolve({})
+            return
+        }
+
+        let postData = ''
+
+        req.on('data', chunk => {
+            postData += chunk.toString()
+        })
+
+        req.on('end', () => {
+            if (!postData) {
+                resolve({})
+                return
+            }
+            resolve( JSON.parse(postData) )
+        })
+    })
+    return promise
+}
+```
+
+##### 使用getPostData方法
+
+在promise.then中处理 路由
+
+```js
+...
+const serverHandle = (req, res) => {
+    ...
+     // 处理Post data
+    getPostData(req).then(postData => {
+        req.body = postData
+
+        /**
+         * 博客数据 & 路由
+         */ 
+        const blogData = handleBlogRouter(req, res)
+        if(blogData) {
+            res.end( JSON.stringify(blogData) )
+            return
+        }
+
+        /**
+         * 用户数据 & 路由
+         */ 
+        const userData = handleUserRouter(req, res)
+        if(userData) {
+            res.end( JSON.stringify(userData) )
+            return
+        }
+
+        /**
+         * 未命中路由，返回404
+         * text/plain 纯文本
+         */
+        res.writeHead(404, { 'Content-type': 'text/plain' })
+        res.write('404 Not Found\n')
+
+        res.end()
+    })
+}
+```
+
