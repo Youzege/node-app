@@ -1,5 +1,5 @@
 /**
- * 
+ * 获取博客列表
  * @param {*} author 作者
  * @param {*} keyword 关键字
  * @returns blog list 博客数组
@@ -25,9 +25,9 @@ const getList = (author, keyword) => {
 }
 
 /**
- * 
+ * 根据 id 返回博客详情信息
  * @param {*} id 
- * @returns 根据 id 返回博客详情信息
+ * @returns 
  */
 const getDetail = (id) => {
 
@@ -40,7 +40,20 @@ const getDetail = (id) => {
     }
 }
 
+/**
+ * 新建博客 参数为博客内容
+ * @param {*} blogData 
+ * @returns 
+ */
+const newBlog = (blogData = {}) => {
+
+    return {
+        id: 3
+    }
+}
+
 export {
     getList,
-    getDetail
+    getDetail,
+    newBlog
 }

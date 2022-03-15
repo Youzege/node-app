@@ -535,3 +535,62 @@ const serverHandle = (req, res) => {
 }
 ```
 
+
+
+#### 路由开发 - 新建博客路由
+
+##### 处理客户端传递的内容数据
+
+src/controller/blog.js 中，创建newBlog方法
+
+```js
+/**
+ * 新建博客 参数为博客内容
+ * @param {*} blogData 
+ * @returns 
+ */
+const newBlog = (blogData = {}) => {
+
+    return {
+        id: 3
+    }
+}
+
+export {
+    ...
+    newBlog
+}
+```
+
+##### 处理接口
+
+```js
+import { ... newBlog } from './../controller/blog.js'
+import { SuccessModel, ErrorModel } from './../model/resModel.js'
+
+const handleBlogRouter = (req, res) => {
+    ...
+    // 新建博客
+    if (method === 'POST' && req.path === '/api/blog/new') {
+        const data = newBlog(req.body)
+
+        return new SuccessModel(data)
+    }
+    ...
+}
+```
+
+接口返回示例
+
+```json
+{
+    "data": {
+        "id": 3
+    },
+    "errno": 0
+}
+```
+
+
+
+#### 路由开发 - 更新博客路由

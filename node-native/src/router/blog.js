@@ -1,4 +1,4 @@
-import { getList, getDetail } from './../controller/blog.js'
+import { getList, getDetail, newBlog } from './../controller/blog.js'
 import { SuccessModel, ErrorModel } from './../model/resModel.js'
 
 const handleBlogRouter = (req, res) => {
@@ -23,9 +23,9 @@ const handleBlogRouter = (req, res) => {
 
     // 新建博客
     if (method === 'POST' && req.path === '/api/blog/new') {
-        return {
-            msg: '新建博客接口~'
-        }
+        const data = newBlog(req.body)
+
+        return new SuccessModel(data)
     }
 
     // 更新博客
