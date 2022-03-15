@@ -1,3 +1,4 @@
+import querystring from 'querystring'
 import  { handleBlogRouter, handleUserRouter }  from './src/router/index.js'
 
 const serverHandle = (req, res) => {
@@ -7,6 +8,9 @@ const serverHandle = (req, res) => {
     // 获取path
     const url = req.url
     req.path = url.split('?')[0]
+
+    // 解析 query
+    req.query = querystring.parse(url.split('?')[0])
 
     /**
      * 博客数据 & 路由

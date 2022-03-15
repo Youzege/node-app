@@ -221,3 +221,171 @@ export default serverHandle
 
 
 #### 路由开发 - 博客列表路由
+
+##### 处理返回数据 responseModel
+
+新建src/model目录，创建`resModel.js`，用来处理服务端给客户端返回的数据格式
+
+例如：下面的JSON
+
+```json
+{
+    "data": [
+        {
+            "id": 1,
+            "title": "标题A",
+            "content": "内容A",
+            "createTime": 1647340327044,
+            "author": "youzege"
+        },
+        {
+            "id": 2,
+            "title": "标题B",
+            "content": "内容B",
+            "createTime": 1647340361996,
+            "author": "youzege"
+        }
+    ],
+    "message": "成功返回",
+    "errno": 0
+}
+```
+
+`resModel`实现
+
+成功返回 & 失败返回 两个类
+
+```js
+
+class BaseModel {
+    constructor(data, message) {
+        if (typeof data === 'string') {
+            this.message = data
+            data = null
+            message = null
+        }
+        if (data) {
+            this.data = data
+        }
+        if (message) {
+            this.message = message
+        }
+    }
+}
+
+/**
+ * 请求成功 返回的信息
+ * @param data
+ * @param message
+ * @returns errno 0
+ */
+class SuccessModel extends BaseModel {
+    constructor(data, message) {
+        super(data, message)
+        this.errno = 0
+    }
+}
+
+/**
+ * 请求失败 返回的信息
+ * @param data
+ * @param message
+ * @returns errno -1
+ */
+class ErrorModel extends BaseModel {
+    constructor(data, message) {
+        super(data, message)
+        this.errno = -1
+    }
+}
+
+export {
+    SuccessModel,
+    ErrorModel
+}
+```
+
+
+
+##### 处理服务端返回数据
+
+创建src/controller目录，定义blog.js，用来处理接口请求服务端需要返回的数据，只返回数据，不做其他处理
+
+例如：获取用户博客列表，创建`getList`方法
+
+```js
+/**
+ * 
+ * @param {*} author 作者
+ * @param {*} keyword 关键字
+ * @returns blog list 博客数组
+ */
+const getList = (author, keyword) => {
+    
+    return [
+        {
+            id: 1,
+            title: '标题A',
+            content: '内容A',
+            createTime: 1647340327044,
+            author: 'youzege'
+        },
+        {
+            id: 2,
+            title: '标题B',
+            content: '内容B',
+            createTime: 1647340361996,
+            author: 'youzege'
+        },
+    ]
+}
+
+export {
+    getList
+}
+```
+
+
+
+##### 处理接口
+
+在src/router/blog.js中，处理获取博客列表的接口，返回正确的数据
+
+```js
+import { getList } from './../controller/blog.js'
+import { SuccessModel, ErrorModel } from './../model/resModel.js'
+
+const handleBlogRouter = (req, res) => {
+    ...
+     // 获取博客列表
+    if (method === 'GET' && req.path === '/api/blog/list') {
+        const author = req.query.author || ''
+        const keyword = req.query.keyword || ''
+        const listData = getList(author, keyword)
+
+        return new SuccessModel(listData)
+    }
+    ...
+}
+```
+
+
+
+##### 处理app实例
+
+在 app.js中，处理请求query，拿到客户端请求的 `query参数`
+
+```js
+import querystring from 'querystring'
+
+const serverHandle = (req, res) => {
+    ...
+    // 解析 query
+    req.query = querystring.parse(url.split('?')[0])
+    ...
+}
+```
+
+
+
+#### 路由开发 - 博客详情路由
