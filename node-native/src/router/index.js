@@ -1,5 +1,5 @@
-import handleBlogRouter from './user.js'
-import handleUserRouter from './blog.js'
+import handleBlogRouter from './blog.js'
+import handleUserRouter from './user.js'
 
 export {
     handleBlogRouter,

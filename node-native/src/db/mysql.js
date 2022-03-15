@@ -24,6 +24,4 @@ function exec(sql) {
     return promise
 }
 
-console.log('服务器连接成功!')
-
-export { exec }
+export default exec

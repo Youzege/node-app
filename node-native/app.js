@@ -53,9 +53,11 @@ const serverHandle = (req, res) => {
         /**
          * 博客数据 & 路由
          */ 
-        const blogData = handleBlogRouter(req, res)
-        if(blogData) {
-            res.end( JSON.stringify(blogData) )
+        const blogResult = handleBlogRouter(req, res)
+        if (blogResult) {
+            blogResult.then(blogData => {
+                res.end( JSON.stringify(blogData) )
+            })
             return
         }
 
@@ -73,8 +75,9 @@ const serverHandle = (req, res) => {
          * text/plain 纯文本
          */
         res.writeHead(404, { 'Content-type': 'text/plain' })
-        res.write('404 Not Found\n')
+        res.write('404 Not Found!!!\n')
 
+        
         res.end()
     })
 }

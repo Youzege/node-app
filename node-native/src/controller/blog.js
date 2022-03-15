@@ -1,27 +1,24 @@
+import exec from './../db/mysql.js'
+
 /**
  * 获取博客列表
  * @param {*} author 作者
  * @param {*} keyword 关键字
- * @returns blog list 博客数组
+ * @returns 博客数组 promise对象
  */
 const getList = (author, keyword) => {
-    
-    return [
-        {
-            id: 1,
-            title: '标题A',
-            content: '内容A',
-            createTime: 1647340327044,
-            author: 'youzege'
-        },
-        {
-            id: 2,
-            title: '标题B',
-            content: '内容B',
-            createTime: 1647340361996,
-            author: 'youzege'
-        },
-    ]
+    // 1=1 作用 占位符，防止 author keyword值没有导致报错
+    let sql = `select * from blogs where 1=1 `
+    if (author) {
+        sql += `and author='${author}' `
+    }
+    if (keyword) {
+        sql += `and title like '%${keyword}%' `
+    }
+    sql += `order by createtime desc;`
+
+    // 返回的是promise
+    return exec(sql)
 }
 
 /**

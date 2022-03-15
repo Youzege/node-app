@@ -775,3 +775,134 @@ export default handleUserRouter
 }
 ```
 
+
+
+#### Node.js 连接 MySQL数据库
+
+
+
+安装mysql `npm install mysql`
+
+
+
+##### 设置环境变量
+
+新建src/conf/db.js，设置环境变量
+
+```js
+const env = process.env.NODE_ENV // 环境变量
+
+// 配置
+let MYSQL_CONF
+
+if (env === 'dev') {
+    MYSQL_CONF = {
+        host: 'localhost',
+        user: 'root',
+        password: '123456',
+        port: '3306',
+        database: 'nodeblog'
+    }
+}
+
+if (env === 'production') {
+    MYSQL_CONF = {
+        host: 'localhost',
+        user: 'root',
+        password: '123456',
+        port: '3306',
+        database: 'nodeblog'
+    }
+}
+
+export default MYSQL_CONF
+
+```
+
+
+
+##### 启动连接mysql数据库
+
+新建src/db/mysql.js
+
+```js
+import mysql from 'mysql'
+import MYSQL_CONF from './../conf/db.js'
+
+// 创建链接对象
+const con = mysql.createConnection(MYSQL_CONF)
+
+// 开始连接
+con.connect()
+
+/**
+ * 统一执行sql的函数
+ * @param {*} sql 
+ */
+function exec(sql) {
+    const promise = new Promise((resolve, reject) => {
+        con.query(sql, (err, result) => {
+            if (err) {
+                reject(err)
+                return
+            }
+            resolve(result)
+        })
+    })
+    return promise
+}
+
+export default exec
+
+```
+
+
+
+#### 路由开发 - 博客列表连接mysql
+
+##### 处理接口
+
+getList返回了一个promise对象，需要进行处理
+
+```js
+const handleBlogRouter = (req, res) => {
+    ...
+    // 获取博客列表
+    if (method === 'GET' && req.path === '/api/blog/list') {
+        const author = req.query.author || ''
+        const keyword = req.query.keyword || ''
+
+        const result = getList(author, keyword)
+        
+        return result.then(listData => {
+            return new SuccessModel(listData)
+        })
+    }
+    ...
+}
+```
+
+##### 处理app实例
+
+现在通过 返回 promise对象来进行数据获取，修改获取数据的方式，通过promise.then
+
+```js
+const serverHandle = (req, res) => {
+    ...
+    getPostData(req).then(postData => {
+        ...
+        /**
+         * 博客数据 & 路由
+         */ 
+        const blogResult = handleBlogRouter(req, res)
+        if (blogResult) {
+            blogResult.then(blogData => {
+                res.end( JSON.stringify(blogData) )
+            })
+            return
+        }
+        ...
+    }
+}
+```
+
