@@ -80,3 +80,144 @@ const server = http.createServer(serverHandle)
 | 删除一篇博客     | /api/blog/del    | POST     | id                            |                          |
 | 登录             | /api/user/login  | POST     |                               | postData中有用户名和密码 |
 
+
+
+#### 路由设计|初始化路由
+
+在根目录下创建src目录，用来处理一些业务
+
+src目录下，新建 router 文件夹，用来保存路由信息
+
+##### 博客路由
+
+创建src/blog.js , 处理请求的路由地址
+
+```js
+const handleBlogRouter = (req, res) => {
+    const method = req.method
+
+    // 获取博客列表
+    if (method === 'GET' && req.path === '/api/blog/list') {
+        return {
+            msg: '获取博客列表接口~'
+        }
+    }
+
+    // 获取博客详情
+    if (method === 'GET' && req.path === '/api/blog/detail') {
+        return {
+            msg: '获取博客详情接口~'
+        }
+    }
+
+    // 新建博客
+    if (method === 'POST' && req.path === '/api/blog/new') {
+        return {
+            msg: '新建博客接口~'
+        }
+    }
+
+    // 更新博客
+    if (method === 'POST' && req.path === '/api/blog/update') {
+        return {
+            msg: '更新博客接口~'
+        }
+    }
+
+    // 更新博客
+    if (method === 'POST' && req.path === '/api/blog/del') {
+        return {
+            msg: '删除博客接口~'
+        }
+    }
+}
+
+export default handleBlogRouter
+```
+
+
+
+##### 用户路由
+
+创建src/user.js , 处理 用户路由
+
+```js
+const handleUserRouter = (req, res) => {
+    const method = req.method
+
+    // 登录
+    if (method === 'POST' && req.path === '/api/user/login') {
+        return {
+            msg: '登录接口~'
+        }
+    }
+}
+
+export default handleUserRouter
+```
+
+
+
+##### app实例加载路由
+
+```js
+import  { handleBlogRouter, handleUserRouter }  from './src/router/index.js'
+
+const serverHandle = (req, res) => {
+    // 设置返回格式 JSON
+    res.setHeader('Content-type', 'application/json')
+
+    // 获取path
+    const url = req.url
+    req.path = url.split('?')[0]
+
+    /**
+     * 博客数据 & 路由
+     */ 
+    const blogData = handleBlogRouter(req, res)
+    if(blogData) {
+        res.end( JSON.stringify(blogData) )
+        return
+    }
+
+    /**
+     * 用户数据 & 路由
+     */ 
+     const userData = handleUserRouter(req, res)
+     if(userData) {
+         res.end( JSON.stringify(userData) )
+         return
+     }
+
+     /**
+      * 未命中路由，返回404
+      * text/plain 纯文本
+      */
+     res.writeHead(404, { 'Content-type': 'text/plain' })
+     res.write('404 Not Found\n')
+
+     res.end()
+}
+
+export default serverHandle
+```
+
+
+
+##### 在node中使用ESM的办法
+
+在package.json中配置
+
+```js
+{
+	"type": "module",
+}
+```
+
+
+
+**结语**：这是Node创建路由的一些简单基本应用，主要是创建路由，在`app.js`入口中引入路由处理函数，完成http请求的过程。
+
+
+
+#### 路由开发 - 博客列表路由
