@@ -858,7 +858,26 @@ export default exec
 
 
 
-#### 路由开发 - 博客列表连接mysql
+#### 数据库接口 - 获取博客列表
+
+##### 处理数据
+
+```js
+const getList = (author, keyword) => {
+    // 1=1 作用 占位符，防止 author keyword值没有导致报错
+    let sql = `select * from blogs where 1=1 `
+    if (author) {
+        sql += `and author='${author}' `
+    }
+    if (keyword) {
+        sql += `and title like '%${keyword}%' `
+    }
+    sql += `order by createtime desc;`
+
+    // 返回的是promise
+    return exec(sql)
+}
+```
 
 ##### 处理接口
 
@@ -903,6 +922,35 @@ const serverHandle = (req, res) => {
         }
         ...
     }
+}
+```
+
+
+
+#### 数据库接口 - 获取博客详情
+
+##### 处理数据
+
+```js
+const getDetail = (id) => {
+    const sql = `select * from blogs where id='${id}'`
+
+    return exec(sql).then(rows => rows[0])
+}
+```
+
+##### 处理接口
+
+```js
+const handleBlogRouter = (req, res) => {
+    ...
+    // 获取博客详情
+    if (method === 'GET' && req.path === '/api/blog/detail') {
+        const result = getDetail(id)
+
+        return result.then(data => new SuccessModel(data))
+    }
+    ...
 }
 ```
 

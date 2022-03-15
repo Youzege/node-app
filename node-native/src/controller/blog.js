@@ -27,14 +27,9 @@ const getList = (author, keyword) => {
  * @returns 
  */
 const getDetail = (id) => {
+    const sql = `select * from blogs where id='${id}'`
 
-    return {
-        id: 1,
-        title: '标题A',
-        content: '内容A',
-        createTime: 1647340327044,
-        author: 'youzege'
-    }
+    return exec(sql).then(rows => rows[0])
 }
 
 /**
@@ -43,10 +38,19 @@ const getDetail = (id) => {
  * @returns 
  */
 const newBlog = (blogData = {}) => {
+    // 获取博客对象
+    const { title, content, author } = blogData
+    const createtime = Date.now()
+    const sql = `
+        insert into blogs (title, content, createtime, author)
+        values ('${title}', '${content}', '${createtime}', '${author}');
+    `
 
-    return {
-        id: 3
-    }
+    return exec(sql).then(insertData => {
+        return {
+            id: insertData.insertId
+        }
+    })
 }
 
 /**

@@ -201,3 +201,82 @@ update users set state='0';
 select * from users where state='1';
 ```
 
+
+
+#### NodeJS操作 MySQL数据库
+
+通过一个demo来完成，跑通流程
+
+安装 mysql 包
+
+```
+npm install mysql
+```
+
+
+
+创建index.js
+
+```js
+import mysql from 'mysql'
+
+// 创建链接对象
+const con = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '123456',
+    port: '3306',
+    database: 'nodeblog'
+})
+
+// 开始连接数据库
+con.connect()
+
+// 执行sql语句
+const sql = 'select * from users;'
+// const sql = `update users set realname='你泽哥1' where username='youzege';`
+// const sql = `insert into users (username, `password`, realname) values ('lizehang', '123', '李泽航');`
+
+//查询
+con.query(sql, (err, result) => {
+    if (err) {
+        console.log(err)
+        return
+    }
+    console.log(result)
+})
+
+// 关闭连接
+con.end()
+
+```
+
+
+
+**执行更新返回的参数**
+
+affectedRows: 1 表示影响的行数是一行
+
+changedRows: 1 表示更新的行数是一行
+
+
+
+**执行插入返回的参数**
+
+insertId: 3 表示新插入的id
+
+
+
+如果连接报错 请查阅 [解决Navicat连接不上MySql服务器报错：Client does not support authentication protocol requested by server； conside_小李睡醒了的博客-CSDN博客_navicat连接不到服务器](https://blog.csdn.net/weixin_43111077/article/details/108811949)
+
+```sql
+-- 步骤1：
+ALTER USER 'root'@'localhost' IDENTIFIED BY '12345678' PASSWORD EXPIRE NEVER;
+
+-- 步骤2：
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456';
+
+-- 步骤3：
+FLUSH PRIVILEGES; 
+```
+
