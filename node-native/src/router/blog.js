@@ -1,8 +1,9 @@
-import { getList, getDetail, newBlog } from './../controller/blog.js'
+import { getList, getDetail, newBlog, updateBlog } from './../controller/blog.js'
 import { SuccessModel, ErrorModel } from './../model/resModel.js'
 
 const handleBlogRouter = (req, res) => {
     const method = req.method
+    const id = req.query.id
 
     // 获取博客列表
     if (method === 'GET' && req.path === '/api/blog/list') {
@@ -15,7 +16,6 @@ const handleBlogRouter = (req, res) => {
 
     // 获取博客详情
     if (method === 'GET' && req.path === '/api/blog/detail') {
-        const id = req.query.id
         const data = getDetail(id)
 
         return new SuccessModel(data)
@@ -30,8 +30,12 @@ const handleBlogRouter = (req, res) => {
 
     // 更新博客
     if (method === 'POST' && req.path === '/api/blog/update') {
-        return {
-            msg: '更新博客接口~'
+        const result = updateBlog(id, req.body)
+
+        if (result) {
+            return new SuccessModel()
+        } else {
+            return new ErrorModel('更新博客失败!')
         }
     }
 

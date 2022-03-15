@@ -594,3 +594,62 @@ const handleBlogRouter = (req, res) => {
 
 
 #### 路由开发 - 更新博客路由
+
+##### 处理客户端传递的更新数据和id
+
+src/controller/blog.js 中，创建updateBlog方法
+
+```js
+/**
+ * 更新博客
+ * @param {*} id id更新博客的ID
+ * @param {*} blogData 更新博客的内容
+ * @returns 
+ */
+ const updateBlog = (id, blogData = {}) => {
+
+    console.log(id, blogData);
+    return true
+}
+ 
+ export {
+    ...
+    updateBlog
+}
+```
+
+##### 处理接口
+
+```js
+import { ... updateBlog } from './../controller/blog.js'
+import { SuccessModel, ErrorModel } from './../model/resModel.js'
+
+const handleBlogRouter = (req, res) => {
+    ...
+    // 更新博客
+    if (method === 'POST' && req.path === '/api/blog/update') {
+        const result = updateBlog(id, req.body)
+
+        if (result) {
+            return new SuccessModel()
+        } else {
+            return new ErrorModel('更新博客失败!')
+        }
+    }
+    ...
+}
+```
+
+请求示例
+
+```json
+{
+    "errno": 0
+}
+//----------------------
+{
+    "message": "更新博客失败!",
+    "errno": -1
+}
+```
+

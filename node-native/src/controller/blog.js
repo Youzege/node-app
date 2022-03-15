@@ -52,8 +52,21 @@ const newBlog = (blogData = {}) => {
     }
 }
 
+/**
+ * 更新博客
+ * @param {*} id id更新博客的ID
+ * @param {*} blogData 更新博客的内容
+ * @returns 
+ */
+ const updateBlog = (id, blogData = {}) => {
+
+    console.log(id, blogData);
+    return true
+}
+
 export {
     getList,
     getDetail,
-    newBlog
+    newBlog,
+    updateBlog
 }
