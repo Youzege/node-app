@@ -653,3 +653,125 @@ const handleBlogRouter = (req, res) => {
 }
 ```
 
+
+
+#### 路由开发 - 删除博客路由
+
+##### 处理客户端传递的删除的博客id
+
+src/controller/blog.js 中，创建delBlog方法
+
+```js
+/**
+ * 更新博客
+ * @param {*} id id更新博客的ID
+ * @returns 
+ */
+ const delBlog = (id, blogData = {}) => {
+
+    return true
+}
+ 
+ export {
+    ...
+    delBlog
+}
+```
+
+##### 处理接口
+
+```js
+import { ... delBlog } from './../controller/blog.js'
+import { SuccessModel, ErrorModel } from './../model/resModel.js'
+
+const handleBlogRouter = (req, res) => {
+    ...
+    // 删除博客
+    if (method === 'POST' && req.path === '/api/blog/del') {
+        const result = delBlog(id, req.body)
+
+        if (result) {
+            return new SuccessModel()
+        } else {
+            return new ErrorModel('删除博客失败!')
+        }
+    }
+    ...
+}
+```
+
+请求示例
+
+```json
+{
+    "errno": 0
+}
+//----------------------
+{
+    "message": "删除博客失败!",
+    "errno": -1
+}
+```
+
+
+
+#### 路由开发 - 用户登录
+
+##### 处理登录判断
+
+src/controller/user.js 中，创建loginCheck方法
+
+```js
+const loginCheck = (username, password) => {
+
+    if (username === 'youzege' && password === '123') {
+        return true
+    }
+
+    return false
+}
+
+export {
+    loginCheck
+}
+```
+
+##### 处理登录接口
+
+```js
+import { loginCheck } from './../controller/user.js'
+import { SuccessModel, ErrorModel } from './../model/resModel.js'
+
+const handleUserRouter = (req, res) => {
+    const method = req.method
+
+    // 登录
+    if (method === 'POST' && req.path === '/api/user/login') {
+        const { username, password } = req.body
+
+        const result = loginCheck(username, password)
+
+        if (result) {
+            return new SuccessModel()
+        }
+        return new ErrorModel('登录失败!')
+    }
+}
+
+export default handleUserRouter
+```
+
+返回示例
+
+```json
+// 成功
+{
+    "errno": 0
+}
+// 失败
+{
+    "message": "登录失败!",
+    "errno": -1
+}
+```
+

@@ -1,4 +1,4 @@
-import { getList, getDetail, newBlog, updateBlog } from './../controller/blog.js'
+import { getList, getDetail, newBlog, updateBlog, delBlog } from './../controller/blog.js'
 import { SuccessModel, ErrorModel } from './../model/resModel.js'
 
 const handleBlogRouter = (req, res) => {
@@ -39,10 +39,14 @@ const handleBlogRouter = (req, res) => {
         }
     }
 
-    // 更新博客
+    // 删除博客
     if (method === 'POST' && req.path === '/api/blog/del') {
-        return {
-            msg: '删除博客接口~'
+        const result = delBlog(id)
+
+        if (result) {
+            return new SuccessModel()
+        } else {
+            return new ErrorModel('删除博客失败!')
         }
     }
 }

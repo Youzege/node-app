@@ -60,7 +60,16 @@ const newBlog = (blogData = {}) => {
  */
  const updateBlog = (id, blogData = {}) => {
 
-    console.log(id, blogData);
+    return true
+}
+
+/**
+ * 删除博客
+ * @param {*} id id删除博客的ID
+ * @returns 
+ */
+ const delBlog = (id) => {
+
     return true
 }
 
@@ -68,5 +77,6 @@ export {
     getList,
     getDetail,
     newBlog,
-    updateBlog
+    updateBlog,
+    delBlog
 }
