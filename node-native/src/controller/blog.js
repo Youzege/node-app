@@ -60,8 +60,13 @@ const newBlog = (blogData = {}) => {
  * @returns 
  */
  const updateBlog = (id, blogData = {}) => {
+    const { title, content } = blogData
 
-    return true
+    const sql = `
+        update blogs set title='${title}', content='${content}' where id=${id}
+    `
+
+    return exec(sql).then(updateData => updateData.affectedRows > 0 ? true : false)
 }
 
 /**
@@ -69,9 +74,10 @@ const newBlog = (blogData = {}) => {
  * @param {*} id id删除博客的ID
  * @returns 
  */
- const delBlog = (id) => {
+ const delBlog = (id, author) => {
+    const sql = `delete from blogs where id='${id}' and author='${author}';`
 
-    return true
+    return exec(sql).then(delData => delData.affectedRows > 0 ? true : false)
 }
 
 export {

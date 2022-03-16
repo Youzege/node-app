@@ -954,3 +954,168 @@ const handleBlogRouter = (req, res) => {
 }
 ```
 
+
+
+#### 数据库接口 - 新建博客
+
+##### 处理数据
+
+目前没有前台，都是假数据
+
+```js
+const newBlog = (blogData = {}) => {
+    // 获取博客对象
+    const { title, content, author } = blogData
+    const createtime = Date.now()
+    const sql = `
+        insert into blogs (title, content, createtime, author)
+        values ('${title}', '${content}', '${createtime}', '${author}');
+    `
+
+    return exec(sql).then(insertData => {
+        return {
+            id: insertData.insertId
+        }
+    })
+}
+```
+
+##### 处理接口
+
+```js
+const handleBlogRouter = (req, res) => {
+    ...
+    // 新建博客
+    if (method === 'POST' && req.path === '/api/blog/new') {
+        req.body.author = 'youzege'
+        const result = newBlog(req.body)
+
+        return result.then(data => new SuccessModel(data))
+    }
+    ...
+}
+```
+
+#### 数据库接口 - 更新博客
+
+##### 处理数据
+
+```js
+/**
+ * 更新博客
+ * @param {*} id id更新博客的ID
+ * @param {*} blogData 更新博客的内容
+ * @returns 
+ */
+ const updateBlog = (id, blogData = {}) => {
+    const { title, content } = blogData
+
+    const sql = `
+        update blogs set title='${title}', content='${content}' where id=${id}
+    `
+
+    return exec(sql).then(updateData => updateData.affectedRows > 0 ? true : false)
+}
+```
+
+
+
+##### 数据接口
+
+```js
+const handleBlogRouter = (req, res) => {
+    ...
+    // 更新博客
+    if (method === 'POST' && req.path === '/api/blog/update') {
+        const result = updateBlog(id, req.body)
+
+        return result.then(updateData => updateData ?  new SuccessModel() : new ErrorModel('更新博客失败!'))
+    }
+    ...
+}
+```
+
+
+
+#### 数据库接口 - 删除博客
+
+##### 处理数据
+
+目前没有做软删除，而是直接删除
+
+```js
+/**
+ * 删除博客
+ * @param {*} id id删除博客的ID
+ * @returns 
+ */
+ const delBlog = (id, author) => {
+    const sql = `delete from blogs where id='${id}' and author='${author}';`
+
+    return exec(sql).then(delData => delData.affectedRows > 0 ? true : false)
+}
+```
+
+##### 数据接口
+
+```
+const handleBlogRouter = (req, res) => {
+    ...
+    // 删除博客
+    if (method === 'POST' && req.path === '/api/blog/del') {
+        const author = 'youzege'
+        const result = delBlog(id, author)
+
+        return result.then(delData => delData ? new SuccessModel() : new ErrorModel('删除博客失败!'))
+    }
+    ...
+}
+```
+
+
+
+#### 数据库接口 - 用户登录
+
+##### 处理SQL
+
+```js
+const loginCheck = (username, password) => {
+    console.log(password);
+    const sql = `
+        select username, realname from users where username='${username}' and password='${password}';
+    `
+    return exec(sql).then(rows => rows[0] || {})
+}
+```
+
+##### 登录接口
+
+```js
+const handleUserRouter = (req, res) => {
+    const method = req.method
+
+    // 登录
+    if (method === 'POST' && req.path === '/api/user/login') {
+        const { username, password } = req.body
+
+        const result = loginCheck(username, password)
+        return result.then(loginData => loginData.username ? new SuccessModel() : new ErrorModel('登录失败!'))
+    }
+}
+```
+
+##### app实例
+
+```js
+/**
+ * 用户数据 & 路由
+ */ 
+const userResult = handleUserRouter(req, res)
+if(userResult) {
+    userResult.then(userData => {
+        res.end( JSON.stringify(userData) )
+    })
+    return
+}
+```
+
