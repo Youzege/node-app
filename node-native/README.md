@@ -1497,3 +1497,91 @@ const serverHandle = (req, res) => {
 }
 ```
 
+#### 路由解析- redis同步
+
+```js
+import { set } from './../db/redis.js'
+
+// 登录
+if (method === 'GET' && req.path === '/api/user/login') {
+    // const { username, password } = req.body
+    const { username, password } = req.query
+
+    const result = login(username, password)
+    return result.then(loginData => {
+        if (loginData.username) {
+            // 设置 sessino
+            req.session.username = loginData.username
+            req.session.realname = loginData.realname
+
+            // 同步 reids
+            set(req.sessionId, req.session)
+
+            return new SuccessModel()
+        }
+        return new ErrorModel('登录失败!')
+    })
+}
+```
+
+
+
+## 登录验证
+
+
+
+可以做一个中间件来管理需要验证的路由
+
+```js
+// 统一的登录验证函数
+const loginCheck = (req) => {
+    if (!req.session.username) {
+        return Promise.resolve( new ErrorModel('尚未登录！') )
+    }
+}
+```
+
+
+
+新建博客路由、更新博客路由、删除博客路由需要登录验证
+
+```js
+// 新建博客
+if (method === 'POST' && req.path === '/api/blog/new') {
+    const loginCheckResult = loginCheck(req)
+    if (loginCheckResult) {
+        return loginCheck
+    }
+
+    req.body.author = req.session.username
+    const result = newBlog(req.body)
+
+    return result.then(data => new SuccessModel(data))
+}
+
+// 更新博客
+if (method === 'POST' && req.path === '/api/blog/update') {
+    const loginCheckResult = loginCheck(req)
+    if (loginCheckResult) {
+        return loginCheck
+    }
+
+    const result = updateBlog(id, req.body)
+
+    return result.then(updateData => updateData.username ?  new SuccessModel() : new ErrorModel('更新博客失败!'))
+}
+
+// 删除博客
+if (method === 'POST' && req.path === '/api/blog/del') {
+    const loginCheckResult = loginCheck(req)
+    if (loginCheckResult) {
+        return loginCheck
+    }
+
+    const author = req.session.username
+    const result = delBlog(id, author)
+
+    return result.then(delData => delData ? new SuccessModel() : new ErrorModel('删除博客失败!'))
+}
+```
+
