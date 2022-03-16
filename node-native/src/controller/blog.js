@@ -1,4 +1,4 @@
-import exec from './../db/mysql.js'
+import { exec, escape } from './../db/mysql.js'
 
 /**
  * 获取博客列表
@@ -27,7 +27,8 @@ const getList = (author, keyword) => {
  * @returns 
  */
 const getDetail = (id) => {
-    const sql = `select * from blogs where id='${id}'`
+    id = escape(id)
+    const sql = `select * from blogs where id=${id}`
 
     return exec(sql).then(rows => rows[0])
 }
@@ -39,11 +40,14 @@ const getDetail = (id) => {
  */
 const newBlog = (blogData = {}) => {
     // 获取博客对象
-    const { title, content, author } = blogData
+    let { title, content, author } = blogData
+    title = escape(title)
+    content = escape(content)
+
     const createtime = Date.now()
     const sql = `
         insert into blogs (title, content, createtime, author)
-        values ('${title}', '${content}', '${createtime}', '${author}');
+        values (${title}, ${content}, '${createtime}', '${author}');
     `
 
     return exec(sql).then(insertData => {
@@ -61,9 +65,11 @@ const newBlog = (blogData = {}) => {
  */
  const updateBlog = (id, blogData = {}) => {
     const { title, content } = blogData
+    title = escape(title)
+    content = escape(content)
 
     const sql = `
-        update blogs set title='${title}', content='${content}' where id=${id}
+        update blogs set title=${title}, content=${content} where id=${id}
     `
 
     return exec(sql).then(updateData => updateData.affectedRows > 0 ? true : false)

@@ -23,5 +23,8 @@ function exec(sql) {
     })
     return promise
 }
-
-export default exec
+const escape = mysql.escape
+export {
+    exec,
+    escape
+}
