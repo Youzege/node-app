@@ -1232,7 +1232,7 @@ res.setHeader('Set-Cookie', `username=${username}; path=/; httpOnly; expires=${g
 
 
 
-## Seesion
+## Session
 
 
 
@@ -1242,7 +1242,7 @@ res.setHeader('Set-Cookie', `username=${username}; path=/; httpOnly; expires=${g
 
 
 
-#### 解析 seesion
+#### 解析 session
 
 app.js中 解析
 
@@ -1265,41 +1265,111 @@ if (userId) {
 req.session = SESSION_DATA[userId]
 
 /**
-         * 博客数据 & 路由
-         */ 
-        const blogResult = handleBlogRouter(req, res)
-        if (blogResult) {
-            blogResult.then(blogData => {
-                if (needSetCookie) {
-                    res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
-                }
-                res.end( JSON.stringify(blogData) )
-            })
-            return
-        }
+* 博客数据 & 路由
+*/ 
+const blogResult = handleBlogRouter(req, res)
+if (blogResult) {
+blogResult.then(blogData => {
+    if (needSetCookie) {
+        res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
+    }
+    res.end( JSON.stringify(blogData) )
+})
+return
+}
 
-        /**
-         * 用户数据 & 路由
-         */ 
-        const userResult = handleUserRouter(req, res)
-        if(userResult) {
-            userResult.then(userData => {
-                if (needSetCookie) {
-                    res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
-                }
-                res.end( JSON.stringify(userData) )
-            })
-            return
-        }
+/**
+* 用户数据 & 路由
+*/ 
+const userResult = handleUserRouter(req, res)
+if(userResult) {
+userResult.then(userData => {
+    if (needSetCookie) {
+        res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
+    }
+    res.end( JSON.stringify(userData) )
+})
+return
+}
 ```
 
 
 
+登录路由中，设置 session
+
+```js
+// 登录
+if (method === 'GET' && req.path === '/api/user/login') {
+    // const { username, password } = req.body
+    const { username, password } = req.query
+
+    const result = login(username, password)
+    return result.then(loginData => {
+        if (loginData.username) {
+            // 设置 sessino
+            req.session.username = loginData.username
+            req.session.realname = loginData.realname
+
+            return new SuccessModel()
+        }
+        return new ErrorModel('登录失败!')
+    })
+}
+```
 
 
 
+##### session的一些问题
+
+- 目前session直接存放 js 变量中，放在nodejs进程内存中
+- 进程内存有限，访问量过大，内存暴增的问题
+- 上线后，运行是多进程的，进程之间内存无法共享的问题
 
 
+
+## redis
+
+
+
+解决seesion的一些问题
+
+- web server常用的缓存数据库，数据存放在内存中
+- 相比于mysql，访问速度快（内存和硬盘不是一个数量级的
+- 成本较高，内存贵，存储量小
+
+session适合用 redis
+
+- session 访问频繁，对性能要求极高
+- session 可以不考虑断电丢失数据的问题，丢失后，再次登录即可
+- session 数据量不会很大
+
+网站数据不适合 redis
+
+- 操作频率不是很高（相较于 session
+- 断电不能丢失，必须保留数据
+- 数据量过大，内存成本较高
+
+
+
+#### redis操作
+
+启动redis服务 `redis-server.exe redis.windows.conf` ，不用关闭窗口
+
+新建窗口：
+
+使用redis服务 `redis-cli.exe -h 127.0.0.1 -p 6379`
+
+设置 键值对： `set myKey abc`
+
+读取 键值对： `get myKey`
+
+查看 所有键： `kyes *`
+
+删除 键值对： `del myKey`
+
+
+
+#### 封装redis工具函数
 
 
 

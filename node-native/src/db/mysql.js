@@ -1,5 +1,5 @@
 import mysql from 'mysql'
-import MYSQL_CONF from './../conf/db.js'
+import { MYSQL_CONF } from './../conf/db.js'
 
 // 创建链接对象
 const con = mysql.createConnection(MYSQL_CONF)
