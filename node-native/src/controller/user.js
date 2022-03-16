@@ -1,7 +1,9 @@
 import { exec, escape } from './../db/mysql.js'
+import xss from 'xss'
+
 const login = (username, password) => {
-    username = escape(username)
-    password = escape(password)
+    username = escape(xss(username))
+    password = escape(xss(password))
     const sql = `
         select username, realname from users where username=${username} and password=${password};
     `

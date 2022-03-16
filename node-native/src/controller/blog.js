@@ -1,4 +1,5 @@
 import { exec, escape } from './../db/mysql.js'
+import xss from 'xss'
 
 /**
  * 获取博客列表
@@ -41,8 +42,8 @@ const getDetail = (id) => {
 const newBlog = (blogData = {}) => {
     // 获取博客对象
     let { title, content, author } = blogData
-    title = escape(title)
-    content = escape(content)
+    title = escape(xss(title))
+    content = escape(xss(content))
 
     const createtime = Date.now()
     const sql = `
@@ -64,9 +65,9 @@ const newBlog = (blogData = {}) => {
  * @returns 
  */
  const updateBlog = (id, blogData = {}) => {
-    const { title, content } = blogData
-    title = escape(title)
-    content = escape(content)
+    let { title, content } = blogData
+    title = escape(xss(title))
+    content = escape(xss(content))
 
     const sql = `
         update blogs set title=${title}, content=${content} where id=${id}
