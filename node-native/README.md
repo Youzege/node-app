@@ -1232,3 +1232,76 @@ res.setHeader('Set-Cookie', `username=${username}; path=/; httpOnly; expires=${g
 
 
 
+## Seesion
+
+
+
+不能在 cookie 中存放一些个人信息，隐私等
+
+通过在 cookie 中 存储 userid，server端 对应 username，来解决个人信息暴露的问题 
+
+
+
+#### 解析 seesion
+
+app.js中 解析
+
+```js
+// session 数据
+const SESSION_DATA = {}
+
+// 解析 session
+let needSetCookie = false
+let userId = req.cookie.userid
+if (userId) {
+    if(!SESSION_DATA[userId]) {
+        SESSION_DATA[userId] = {}
+    }
+} else {
+    needSetCookie = true
+    userId = `${Date.now()}_${Math.random()}`
+    SESSION_DATA[userId] = {}
+}
+req.session = SESSION_DATA[userId]
+
+/**
+         * 博客数据 & 路由
+         */ 
+        const blogResult = handleBlogRouter(req, res)
+        if (blogResult) {
+            blogResult.then(blogData => {
+                if (needSetCookie) {
+                    res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
+                }
+                res.end( JSON.stringify(blogData) )
+            })
+            return
+        }
+
+        /**
+         * 用户数据 & 路由
+         */ 
+        const userResult = handleUserRouter(req, res)
+        if(userResult) {
+            userResult.then(userData => {
+                if (needSetCookie) {
+                    res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`)
+                }
+                res.end( JSON.stringify(userData) )
+            })
+            return
+        }
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
