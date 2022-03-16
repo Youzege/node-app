@@ -1,3 +1,7 @@
 GET -- /api/blog/list -- apifox/2.0.2 (https://www.apifox.cn) -- 1647444342032
 GET -- /api/blog/detail?id=2 -- apifox/2.0.2 (https://www.apifox.cn) -- 1647444870209
 GET -- /api/blog/detail?id=2 -- apifox/2.0.2 (https://www.apifox.cn) -- 1647444873291
+GET -- /api/blog/detail?id=2 -- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39 -- 1647445881096
+GET -- /favicon.ico -- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39 -- 1647445881189
+GET -- /api/blog/detail?id=2 -- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39 -- 1647445883066
+GET -- /api/blog/detail?id=2 -- apifox/2.0.2 (https://www.apifox.cn) -- 1647446006475
