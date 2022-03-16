@@ -1585,3 +1585,36 @@ if (method === 'POST' && req.path === '/api/blog/del') {
 }
 ```
 
+
+
+## 模拟前后端联调
+
+
+
+- 登录功能依赖 cookie， 必须用浏览器来联调
+- cookie 跨域不共享，前端和 server端必须同域
+- 使用nginx做代理，让前后端同域
+
+
+
+#### nginx
+
+- 高性能的web服务器，开源免费
+- 常用于做静态服务
+- 反向代理
+
+
+
+##### nginx 配置
+
+代理 前端 8001 后端 8000 端口
+
+```
+location / {
+    proxy_pass http://localhost:8001;
+}	
+location /api/ {
+    proxy_pass http://localhost:8000;
+    proxy_set_header Host $host;
+}	
+```
