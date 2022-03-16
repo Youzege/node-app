@@ -1119,3 +1119,116 @@ if(userResult) {
 }
 ```
 
+
+
+## 登录功能需要的一些知识
+
+
+
+## Cookie
+
+- 什么是cookie
+- JavaScript操作 cookie，浏览器中查看 cookie
+- server端操作 cookie
+
+**cookie**
+
+- 存储在浏览器的一段字符串 （最大5kb）
+- 跨域不共享，浏览器为每个域名存储一段cookie
+- 格式：键值对，`k1=v1;k2=v2;k3=v3...`，因此可以存储结构化数据
+- 每次发送http请求，会将请求域的cookie一起发送给server端
+- server 端 可以修改cookie并返回给浏览器
+- 客户端操作cookie，限制浏览器端修改cookie
+
+
+
+JavaScript 操作cookie
+
+不能删除，能累加，覆盖
+
+```js
+document.cookie = 'k1=100;'
+document.cookie = 'k2=200;'
+// 'k1=100;k2=200'
+document.cookie = 'k1=300;'
+// 'k2=200;k1=300'
+```
+
+
+
+#### cookie 用于登录验证
+
+在 app.js中 ，设置一个解析cookie的工具函数
+
+```js
+// 解析cookie
+req.cookie = {}
+const cookieStr = req.headers.cookie || ''
+cookieStr.split(';').forEach(item => {
+    if (!item) {
+        return
+    }
+    const arr = item.split('=')
+    const key = arr[0].trim()
+    const val = arr[1].trim()
+    req.cookie[key] = val
+})
+```
+
+
+
+#### cookie 测试
+
+##### 阻止客户端操作cookie
+
+在router/user.js中操作cookie，跑通流程，并限制客户端操作 cookie
+
+`res.setHeader('Set-Cookie', username=${username}; path=/; httpOnly)`
+
+httpOnly 阻止客户端操作cookie
+
+```js
+const handleUserRouter = (req, res) => {
+    const method = req.method
+
+    // 登录
+    if (method === 'GET' && req.path === '/api/user/login') {
+        // const { username, password } = req.body
+        const { username, password } = req.query
+
+        const result = login(username, password)
+        return result.then(loginData => {
+            if (loginData.username) {
+                //操作 cookie
+
+                res.setHeader('Set-Cookie', `username=${username}; path=/; httpOnly`)
+
+                return new SuccessModel()
+            }
+            return new ErrorModel('登录失败!')
+        })
+    }
+    
+    // 登录验证测试
+    if (method === 'GET' && req.path === '/api/user/login-test') return req.cookie.username ? Promise.resolve(new SuccessModel(req.cookie.username)) : Promise.resolve(new ErrorModel('尚未登录'))
+}
+```
+
+##### 设置cookie过期时间
+
+函数
+
+```js
+// 设置过期时间
+const getCookieExpires = () => {
+    const date = new Date()
+    date.setTime(date.getTime() + ( 24 * 60 * 60 * 1000))
+    console.log(date.toGMTString())
+    return date.toGMTString()
+}
+
+res.setHeader('Set-Cookie', `username=${username}; path=/; httpOnly; expires=${getCookieExpires()}`)
+```
+
+
+

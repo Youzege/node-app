@@ -1,5 +1,5 @@
 import exec from './../db/mysql.js'
-const loginCheck = (username, password) => {
+const login = (username, password) => {
     console.log(password);
     const sql = `
         select username, realname from users where username='${username}' and password='${password}';
@@ -8,5 +8,5 @@ const loginCheck = (username, password) => {
 }
 
 export {
-    loginCheck
+    login
 }
