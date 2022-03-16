@@ -1,6 +1,6 @@
 import { login } from './../controller/user.js'
 import { SuccessModel, ErrorModel } from './../model/resModel.js'
-
+import { set } from './../db/redis.js'
 
 
 const handleUserRouter = (req, res) => {
@@ -17,6 +17,9 @@ const handleUserRouter = (req, res) => {
                 // 设置 sessino
                 req.session.username = loginData.username
                 req.session.realname = loginData.realname
+
+                // 同步 reids
+                set(req.sessionId, req.session)
 
                 return new SuccessModel()
             }

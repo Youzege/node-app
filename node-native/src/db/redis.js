@@ -2,7 +2,7 @@ import redis from 'redis'
 import { REDIS_CONF } from './../conf/db.js'
 
 // 创建 redis 客户端
-const redisClient = redis.createClient(...REDIS_CONF)
+const redisClient = redis.createClient(REDIS_CONF.port, REDIS_CONF.host)
 
 redisClient.on('error', err => {
     console.log(err)

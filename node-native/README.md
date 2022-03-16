@@ -1371,7 +1371,129 @@ session适合用 redis
 
 #### 封装redis工具函数
 
+##### 配置redis
+
+src/conf
+
+```js
+const env = process.env.NODE_ENV // 环境变量
+
+// 配置
+let MYSQL_CONF
+let REDIS_CONF
+
+if (env === 'dev') {
+    ...
+    REDIS_CONF = {
+        port: 6379,
+        host: '127.0.0.1'
+    }
+}
+
+if (env === 'production') {
+    ...
+    REDIS_CONF = {
+        port: 6379,
+        host: '127.0.0.1'
+    }
+}
+
+export  {
+    ...
+    REDIS_CONF
+}
+
+```
 
 
 
+##### 封装成工具函数
+
+src/db/redis.js
+
+```js
+import redis from 'redis'
+import { REDIS_CONF } from './../conf/db.js'
+
+// 创建 redis 客户端
+const redisClient = redis.createClient(...REDIS_CONF)
+
+redisClient.on('error', err => {
+    console.log(err)
+})
+
+function set(key, val) {
+    if (typeof val === 'object') {
+        val = JSON.stringify(val)
+    }
+    redisClient.set(key, val, redis.print)
+}
+
+function get(key) {
+    const promise = new Promise((resolve, reject) => {
+        redisClient.get(key, (err, val) => {
+            if (err) {
+                reject(err)
+                return
+            }
+            if (val == null) {
+                resolve(null)
+                return
+            }
+
+            try {
+                resolve( JSON.parse(val) )
+            } catch (error) {
+                resolve(val)
+            }
+        })
+    })
+    return promise
+}
+
+export {
+    set,
+    get
+}
+```
+
+
+
+## redis - 用户登录
+
+#### 使用redis同步 session
+
+```js
+const serverHandle = (req, res) => {
+    ...
+    // 解析 session 使用redis
+    let needSetCookie = false
+    let userId = req.cookie.userid
+    // set操作
+    if (!userId) {
+        needSetCookie = true
+        userId = `${Date.now()}_${Math.random()}`
+        // 初始化 session 值
+        set(userId, {})
+    }
+    // get操作
+    req.sessionId = userId
+    get(req.sessionId).then(sessionData => {
+        if (sessionData == null) {
+            // 初始化 redis中的 session 值
+            set(req.sessionId, {})
+            // 设置 session
+            req.session = {}
+        } else {
+            req.session = sessionData
+        }
+        
+        // 处理 post data
+        return getPostData(req)
+    })
+    .then(postData => {
+       ...
+    })
+}
+```
 
