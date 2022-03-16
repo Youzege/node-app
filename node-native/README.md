@@ -1618,3 +1618,63 @@ location /api/ {
     proxy_set_header Host $host;
 }	
 ```
+
+
+
+## 日志
+
+
+
+根目录下创建logs文件夹
+
+包含 access.log文件，error.log文件，event.log文件
+
+
+
+处理日志逻辑
+
+src/utils/log.js
+
+```js
+import fs from 'fs'
+import path from 'path'
+
+let dirname = path.resolve() + ''
+
+//写日志
+function writeLog(writeStream, log) {
+    writeStream.write(log + '\n')
+}
+
+// 生成 write Stream
+function createWriteStream(fileName) {
+    const fullFileName = path.join(dirname, '/logs', fileName)
+    const writeStream = fs.createWriteStream(fullFileName, {
+        flags: 'a'
+    })
+    return writeStream
+}
+
+// 访问日志
+const accessWriteStream = createWriteStream('access.log')
+function access(log) {
+    writeLog(accessWriteStream, log)
+}
+
+export {
+    access
+}
+```
+
+
+
+写入日志
+
+```js
+const serverHandle = (req, res) => {
+    // 记录 access log 日志
+    access(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`)
+    ...
+}
+```
+

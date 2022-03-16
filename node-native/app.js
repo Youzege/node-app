@@ -1,6 +1,7 @@
 import querystring from 'querystring'
 import  { handleBlogRouter, handleUserRouter }  from './src/router/index.js'
 import { get, set } from './src/db/redis.js'
+import { access } from './src/utils/log.js'
 
 // 设置过期时间
 const getCookieExpires = () => {
@@ -44,6 +45,9 @@ const getPostData = (req) => {
 }
 
 const serverHandle = (req, res) => {
+    // 记录 access log 日志
+    access(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`)
+
     // 设置返回格式 JSON
     res.setHeader('Content-type', 'application/json')
 
