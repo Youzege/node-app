@@ -61,3 +61,84 @@ const logger = require('morgan');
 app.use(logger('dev'));
 ```
 
+
+
+#### express 路由
+
+##### GET请求
+
+在 routes文件夹 中新建，blog.js 文件
+
+```js
+const express = require('express')
+const router = express.Router()
+
+
+router.get('/list', function (req, res, next) {
+  res.json({
+    errno: 0,
+    data: [1, 2, 3]
+  })
+})
+
+module.exports = router
+```
+
+`res.json`，让我们可以返回json格式的数据，框架给json封装了请求头为 json格式，非常方便
+
+
+
+在 app.js 中引入 blog.js
+
+```js
+const blogRouter = require('./routes/blog')
+
+app.use('/api/blog', blogRouter)
+```
+
+访问 `localhost:3000/api/blog/list`
+
+让接口api 拆分更明确，父路由子路由分离，能更少的修改文件
+
+
+
+##### POST请求
+
+在 routes文件夹 中新建，user.js 文件
+
+```js
+const express = require('express')
+const router = express.Router()
+
+/* GET home page. */
+router.post('/login', function (req, res, next) {
+  const { username, password } = req.body
+  res.json({
+    errno: 0,
+    data: { username, password }
+  })
+})
+
+module.exports = router
+```
+
+`app.use(express.json())`，express框架的方法，为我们处理号了body中的post数据，在post请求中直接访问，req.body就能拿到数据。非常舒服
+
+在 app.js 中引入 user.js
+
+```js
+const userRouter = require('./routes/user')
+
+app.use('/api/user', userRouter)
+```
+
+访问请求 在Apifox中进行post调试  `localhost:3000/api/user/login`
+
+
+
+express提供了其他的解析方式，比如解析urlencoded
+
+```js
+app.use(express.urlencoded({ extended: false }))
+```
+
