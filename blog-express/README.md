@@ -152,6 +152,10 @@ app.use(express.urlencoded({ extended: false }))
 
 express中的 一个个 app.use，就是中间件，当回调函数中执行next，就会一个个串联，最后处理完成整个请求过程。
 
+- app.use 用来注册中间件，收集中间件
+- 遇到http请求时，根据path 和 method 判断触发哪些中间件
+- 实现next机制，即上一个中间件通过next触发下一个中间件
+
 
 
 ```js
