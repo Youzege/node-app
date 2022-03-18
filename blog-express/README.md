@@ -312,3 +312,72 @@ module.exports = (req, res, next) => {
 }
 ```
 
+
+
+#### express 重写路由
+
+##### 博客列表
+
+```js
+router.get('/list', (req, res, next) => {
+  let author = req.query.author || ''
+  const keyword = req.query.keyword || ''
+  if (req.query.isadmin) {
+      // 管理员 界面
+      if (req.session.username == null) {
+          // 未登录
+          res.json( new ErrorModel('用户未登录') )
+          return 
+      }
+      // 强制查询自己的博客
+      author = req.session.username
+  }
+
+  const result = getList(author, keyword)
+  
+  result.then(listData => res.json( new SuccessModel(listData) ))
+})
+```
+
+##### 博客详情
+
+```js
+router.get('/detail', (req, res, next) => {
+  const result = getDetail(req.query.id)
+  result.then(data => res.json(new SuccessModel(data)))
+})
+```
+
+##### 新建博客
+
+```js
+router.post('/new', loginCheck, (req, res, next) => {
+  req.body.author = req.session.username
+
+  const result = newBlog(req.body)
+
+  result.then(data => res.json( new SuccessModel(data) ) )
+})
+```
+
+##### 编辑博客
+
+```js
+router.post('/update', loginCheck, (req, res, next) => {
+  const result = updateBlog(req.query.id, req.body)
+
+  result.then(data => data ? res.json( new SuccessModel(data) ) : res.json( new ErrorModel('更新博客失败！') ) )
+})
+```
+
+##### 删除博客
+
+```js
+router.post('/del', loginCheck, (req, res, next) => {
+  const author = req.session.username
+  const result = delBlog(req.query.id, author)
+
+  result.then(data => data ? res.json( new SuccessModel() ) : res.json( new ErrorModel('删除博客失败！') ) )
+})
+```
+

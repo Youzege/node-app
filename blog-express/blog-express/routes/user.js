@@ -4,7 +4,7 @@ const  { login }  = require('./../controller/user')
 const { SuccessModel, ErrorModel } = require('./../model/resModel')
 
 
-router.post('/login', function (req, res, next) {
+router.post('/login', (req, res, next) => {
   const { username, password } = req.body
   const result = login(username, password)
 
