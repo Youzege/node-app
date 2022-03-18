@@ -3,6 +3,9 @@ const express = require('express')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
+const { redisClient } = require('./db/redis')
 
 const blogRouter = require('./routes/blog')
 const userRouter = require('./routes/user')
@@ -13,6 +16,16 @@ app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+
+const sessionStore = new RedisStore({ client: redisClient })
+// 解析session
+app.use(session({ 
+  resave: false,
+  saveUninitialized: true, 
+  secret: 'YZG_3857#', 
+  cookie: { path: '/', httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }, 
+  store: sessionStore
+}))
 
 
 app.use('/api/blog', blogRouter)
@@ -31,7 +44,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500)
-  res.render('error')
+  // res.render('error')
 })
 
 module.exports = app

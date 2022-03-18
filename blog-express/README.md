@@ -242,3 +242,73 @@ app.listen(3000, () => {
 })
 ```
 
+
+
+#### express 登录中间件
+
+
+
+##### 将session存储到redis中
+
+
+
+db/redis.js
+
+```js
+const redis = require('redis')
+const { REDIS_CONF } = require('./../conf/db')
+
+// 创建 redis 客户端
+const redisClient = redis.createClient(REDIS_CONF.port, REDIS_CONF.host)
+
+redisClient.on('error', err => {
+    console.log(err)
+})
+
+
+module.exports = { redisClient }
+```
+
+
+
+app.js
+
+使用插件：connect-redis，这是一个函数，将express提供的session插件传入session就可以了。
+
+然后创建RedisStore实例，装载redis客户端，将sessionStore仓库加载到session中间件中即可~
+
+```js
+const RedisStore = require('connect-redis')(session)
+const { redisClient } = require('./db/redis')
+
+const sessionStore = new RedisStore({ client: redisClient })
+// 解析session
+app.use(session({ 
+  resave: false,
+  saveUninitialized: true, 
+  secret: 'YZG_3857#', 
+  cookie: { path: '/', httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }, 
+  store: sessionStore
+}))
+```
+
+
+
+##### 创建中间件文件夹
+
+middleware文件夹
+
+`logincheck.js` 登录验证
+
+```js
+const { ErrorModel } = require('./../model/resModel')
+
+module.exports = (req, res, next) => {
+    if (req.session.username) {
+        next()
+        return
+    }
+    res.json( new ErrorModel('用户未登录') )
+}
+```
+
