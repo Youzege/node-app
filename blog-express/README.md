@@ -381,3 +381,28 @@ router.post('/del', loginCheck, (req, res, next) => {
 })
 ```
 
+
+
+#### express 日志
+
+通过 morgan 插件写入日志，通过环境变量，为开发环境、线上环境使用不同的日志格式记录。
+
+```js
+const logger = require('morgan')
+
+const ENV = process.env.NODE_ENV
+if (ENV !== 'production') {
+  // 开发环境
+  app.use(logger('dev'))
+} else {
+  // 线上环境
+  const logFileName = path.join(__dirname, 'logs', 'access.log')
+  const writeStream = fs.createWriteStream(logFileName, {
+    flags: 'a'
+  })
+  app.use(logger('combined'), {
+    stream: writeStream
+  })
+}
+```
+

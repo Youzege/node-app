@@ -1,6 +1,7 @@
 const createError = require('http-errors')
 const express = require('express')
 const path = require('path')
+const fs = require('fs')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const session = require('express-session')
@@ -12,7 +13,20 @@ const userRouter = require('./routes/user')
 
 const app = express()
 
-app.use(logger('dev'))
+const ENV = process.env.NODE_ENV
+if (ENV !== 'production') {
+  // 开发环境
+  app.use(logger('dev'))
+} else {
+  // 线上环境
+  const logFileName = path.join(__dirname, 'logs', 'access.log')
+  const writeStream = fs.createWriteStream(logFileName, {
+    flags: 'a'
+  })
+  app.use(logger('combined'), {
+    stream: writeStream
+  })
+}
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
