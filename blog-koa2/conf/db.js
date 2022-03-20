@@ -20,15 +20,15 @@ if (env === 'dev') {
 
 if (env === 'production') {
     MYSQL_CONF = {
-        host: 'localhost',
+        host: '112.74.95.70',
         user: 'root',
         password: '123456',
         port: '3306',
-        database: 'nodeblog'
+        database: 'my_blog'
     }
     REDIS_CONF = {
         port: 6379,
-        host: '127.0.0.1'
+        host: '112.74.95.70'
     }
 }
 

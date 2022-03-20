@@ -5,7 +5,6 @@ const { genPassword } = require('./../utils/cryp')
 const login = async (username, password) => {
     username = escape(xss(username))
     password = genPassword(password)
-
     password = escape(xss(password))
 
     const sql = `
