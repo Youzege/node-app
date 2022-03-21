@@ -24,7 +24,7 @@ if (env === 'production') {
         user: 'root',
         password: '123456',
         port: '3306',
-        database: 'my_blog'
+        database: 'mine_server'
     }
     REDIS_CONF = {
         port: 6379,

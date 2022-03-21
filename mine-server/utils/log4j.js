@@ -32,7 +32,9 @@ log4js.configure({
     default: { appenders: ['console'], level: 'debug' },
     info: { appenders: ['info', 'console'], level: 'info' },
     error: { appenders: ['error', 'console'], level: 'error' }
-  }
+  },
+  pm2: true,
+  pm2InstanceVar: "NODE_APP_INSTANCE"
 })
 
 /**

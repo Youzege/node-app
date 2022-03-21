@@ -33,8 +33,8 @@ const sequelize = new Sequelize(database, user, password, {
   try {
     await sequelize.authenticate()
     info(`****数据库连接成功****`)
-  } catch (error) {
-      error(`****数据库连接失败**** ${error}`)
+  } catch (err) {
+      error(`****数据库连接失败****`)
   }
 })()
 

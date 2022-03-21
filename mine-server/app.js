@@ -44,7 +44,7 @@ app.use(async (ctx, next) => {
 
 app.use(
   koajwt({ secret: 'youzege' }).unless({
-    path: [/^\/api\/user\/login/]
+    path: [/^\/api\/user\/login/, /^\/api\/user\/register/]
   })
 )
 
